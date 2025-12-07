@@ -21,9 +21,7 @@ async def read_root(request: Request):
     """Serve the HTML UI"""
     return templates.TemplateResponse("index.html", {"request": request})
 
-# ==========================
-#  API: TRAIN MODEL
-# ==========================
+ 
 @app.post("/api/train")
 async def train_model(
     file: UploadFile = File(...),
