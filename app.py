@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 
 app = FastAPI()
 
-# 1. Setup Templates
+
 templates = Jinja2Templates(directory="templates")
 
 # Mount static folder if you have one (optional, but good practice)
