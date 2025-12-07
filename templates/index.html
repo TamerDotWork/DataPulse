@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Clustering App</title>
+    <link rel="stylesheet" href="/static/css/style.min.css">
+</head>
+<body>
+
+<header>
+<div class="container">
+    <div class="row">
+<div class="col-6">
+    <a href="#" class="logo">
+        <img src="/static/logo.png" alt="">
+    </a>
+</div>
+</div>
+</div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <strong>Customer Classification Model v3.0</strong>
+        <h1>Unleash the Power of AI.<br>Smarter, Faster, Better</h1>
+        <p>Transform your business with cutting-edge AI. Automate tasks, enhance decision-making,and unlock new possibilities with our intelligent, adaptive model.</p>
+    </div>
+    <div class="cta">
+            <div class="grid">
+        <!-- SECTION 1: TRAIN -->
+        <div class="card">
+            <h2>1. Train Model</h2>
+            <p>Upload raw data to train a K-Means model.</p>
+            
+            <form id="trainForm">
+                <div class="form-group">
+                    <label>Training Dataset (CSV)</label>
+                    <input type="file" id="trainFile" accept=".csv" required>
+                </div>
+                <div class="form-group">
+                    <label>Number of Clusters (K)</label>
+                    <input type="number" id="kValue" value="3" min="2" max="10" required>
+                </div>
+                <button type="submit" id="btnTrain">Train & Download Model</button>
+            </form>
+            <div id="trainStatus" class="status"></div>
+        </div>
+
+        <!-- SECTION 2: PREDICT -->
+        <div class="card">
+            <h2>2. Predict</h2>
+            <p>Use a trained model on new data.</p>
+            
+            <form id="predictForm">
+                <div class="form-group">
+                    <label>Trained Model (.pkl)</label>
+                    <input type="file" id="modelFile" accept=".pkl" required>
+                </div>
+                <div class="form-group">
+                    <label>New User Records (CSV)</label>
+                    <input type="file" id="predictDataFile" accept=".csv" required>
+                </div>
+                <button type="submit" id="btnPredict">Predict & Download Results</button>
+            </form>
+            <div id="predictStatus" class="status"></div>
+        </div>
+    </div>
+    </div>
+</section>
+
+<script>
+    // HELPER: Handle File Download from Blob
+    const downloadBlob = (blob, filename) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // HELPER: Show Status Message
+    const showStatus = (elementId, message, isError = false) => {
+        const el = document.getElementById(elementId);
+        el.textContent = message;
+        el.style.display = 'block';
+        el.className = `status ${isError ? 'error' : 'success'}`;
+    };
+
+    // --- LOGIC: TRAIN MODEL ---
+    document.getElementById('trainForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnTrain');
+        const fileInput = document.getElementById('trainFile');
+        const kValue = document.getElementById('kValue').value;
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('n_clusters', kValue);
+
+        btn.disabled = true;
+        btn.textContent = "Training...";
+        
+        try {
+            const response = await fetch('/api/train', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || 'Training failed');
+            }
+
+            const blob = await response.blob();
+            downloadBlob(blob, 'trained_model.pkl');
+            showStatus('trainStatus', 'Success! Model downloaded.');
+        } catch (error) {
+            showStatus('trainStatus', error.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Train & Download Model";
+        }
+    });
+
+    // --- LOGIC: PREDICT ---
+    document.getElementById('predictForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnPredict');
+        
+        const formData = new FormData();
+        formData.append('model_file', document.getElementById('modelFile').files[0]);
+        formData.append('data_file', document.getElementById('predictDataFile').files[0]);
+
+        btn.disabled = true;
+        btn.textContent = "Processing...";
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || 'Prediction failed');
+            }
+
+            const blob = await response.blob();
+            downloadBlob(blob, 'prediction_results.csv');
+            showStatus('predictStatus', 'Success! Predictions downloaded.');
+        } catch (error) {
+            showStatus('predictStatus', error.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Predict & Download Results";
+        }
+    });
+</script>
+
+</body>
+</html>
