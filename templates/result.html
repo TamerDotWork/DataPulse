@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict | ML App</title>
+    <link rel="stylesheet" href="/static/css/style.min.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                 <h3 style="margin:0;">ML Platform</h3>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <!-- Success Banner check via URL params -->
+        <div id="successBanner" style="display:none; background: #d1fae5; color: #065f46; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            <strong>Success!</strong> The model has been trained and saved to the server.
+        </div>
+
+        <strong>Step 2: Prediction</strong>
+        <h1>Generate Insights</h1>
+        <p>The model is ready. Upload new data to generate cluster predictions.</p>
+    </div>
+    
+    <div class="container" style="max-width: 600px;">
+        <div class="card">
+            <h2>Run Prediction</h2>
+            <p>Using the currently active model on the server.</p>
+            
+            <form id="predictForm">
+                <div class="form-group">
+                    <label>New User Records (CSV)</label>
+                    <input type="file" id="predictDataFile" accept=".csv" required>
+                </div>
+                <button type="submit" id="btnPredict">Predict & Download Results</button>
+            </form>
+            <div id="predictStatus" class="status"></div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="/" style="font-size: 0.9rem; color: #666;">&larr; Retrain Model</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Check URL for success flag
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('success') === 'true'){
+        document.getElementById('successBanner').style.display = 'block';
+    }
+
+    const downloadBlob = (blob, filename) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    const showStatus = (elementId, message, isError = false) => {
+        const el = document.getElementById(elementId);
+        el.textContent = message;
+        el.style.display = 'block';
+        el.className = `status ${isError ? 'error' : 'success'}`;
+    };
+
+    document.getElementById('predictForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnPredict');
+        
+        const formData = new FormData();
+        // Only sending data file, model is on server
+        formData.append('data_file', document.getElementById('predictDataFile').files[0]);
+
+        btn.disabled = true;
+        btn.textContent = "Processing...";
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || 'Prediction failed');
+            }
+
+            const blob = await response.blob();
+            downloadBlob(blob, 'prediction_results.csv');
+            showStatus('predictStatus', 'Success! Predictions downloaded.');
+        } catch (error) {
+            showStatus('predictStatus', error.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Predict & Download Results";
+        }
+    });
+</script>
+
+</body>
+</html>

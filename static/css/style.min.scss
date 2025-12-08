@@ -27,12 +27,13 @@ body {
     height: 100%;
     width: 100%;
     margin: 0px;
-    background:#0F103F url("../bg.jpg") no-repeat center center fixed;
-    background-size: 60%;
+    // background:#0F103F url("../bg.jpg") no-repeat center center fixed;
+        background: radial-gradient(#ffffff, #CFEFFF)   no-repeat center center fixed;
+    // background-size: 60%;
     padding: 0;
     margin: 0;
     font-size: 1rem;
- color: #fff;
+ color: #0F103F;
 
 }
  
@@ -66,7 +67,7 @@ h1 {
 }
 strong {
     font-size:1rem;
-    color: $brand-light;
+    color: #666;
     font-weight: 100;
 }
 .primary-btn{
@@ -84,4 +85,6 @@ strong {
 }
  .cta {
     padding: 96px;
+}.logo img {
+    height: 36px;
 }
