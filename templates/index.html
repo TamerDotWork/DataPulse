@@ -67,6 +67,12 @@
         const btn = document.getElementById('btnTrain');
         const fileInput = document.getElementById('trainFile');
 
+        // Validation: Ensure file is selected
+        if (!fileInput.files.length) {
+            showStatus('trainStatus', 'Please select a file first.', true);
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
 
@@ -85,20 +91,34 @@
                 throw new Error(result.detail || 'Training failed');
             }
 
-            showStatus('trainStatus', result.message);
+            showStatus('trainStatus', result.message || 'Success! Redirecting...');
             
+            // --- STABLE REDIRECT LOGIC ---
             setTimeout(() => {
-                window.location.href =  result.redirect + "?success=true";
+                // 1. Define a fallback URL (e.g., 'predict.html') in case API doesn't send 'redirect'
+                const targetPath = result.redirect || 'predict.html'; 
+
+                // 2. Construct a proper absolute URL object
+                // This handles relative paths (./page) and absolute paths (/page) correctly
+                const nextUrl = new URL(targetPath, window.location.origin);
+
+                // 3. Add parameters safely using the URLSearchParams API
+                nextUrl.searchParams.set('success', 'true');
+
+                // 4. Use replace() instead of href
+                // This prevents the user from clicking "Back" and re-submitting the training form
+                window.location.replace(nextUrl.toString());
+
             }, 1500);
 
         } catch (error) {
+            console.error(error); // Log for debugging
             showStatus('trainStatus', error.message, true);
             btn.disabled = false;
             btn.textContent = "Start Auto-Training";
         }
     });
 </script>
-
 
 </body>
 </html>
