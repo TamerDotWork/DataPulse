@@ -97,17 +97,11 @@
             setTimeout(() => {
                 // 1. Define a fallback URL (e.g., 'predict.html') in case API doesn't send 'redirect'
                 const targetPath = result.redirect || 'predict.html'; 
-
+consolue.log(result.redirect);
+consolue.log(targetPath);
                 // 2. Construct a proper absolute URL object
                 // This handles relative paths (./page) and absolute paths (/page) correctly
-                const nextUrl = new URL(targetPath, window.location.origin);
-
-                // 3. Add parameters safely using the URLSearchParams API
-                nextUrl.searchParams.set('success', 'true');
-
-                // 4. Use replace() instead of href
-                // This prevents the user from clicking "Back" and re-submitting the training form
-                window.location.replace(nextUrl.toString());
+                
 
             }, 1500);
 
