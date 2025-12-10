@@ -60,7 +60,7 @@
     console.log(data); 
     const successBanner = document.getElementById('successBanner');
     successBanner.textContent = data ;
-
+    successBanner.style.display = 'block';
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('success') === 'true'){
         document.getElementById('successBanner').style.display = 'block';
