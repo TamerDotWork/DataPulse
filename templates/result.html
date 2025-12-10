@@ -59,7 +59,7 @@
     const data = JSON.parse(rawData);
     console.log(data); 
     const successBanner = document.getElementById('successBanner');
-    successBanner.textContent = data ;
+    successBanner.textContent = data.message ;
     successBanner.style.display = 'block';
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('success') === 'true'){
