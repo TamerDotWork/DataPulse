@@ -38,14 +38,14 @@
             <h2>Train Model</h2>
             <p>Select your dataset. We will auto-tune the parameters.</p>
             
-            <form id="trainForm">
+            <form id="trainForm" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Training Dataset (CSV)</label>
-                    <input type="file" id="trainFile" accept=".csv" required>
+                    <input type="file" id="trainFile" accept=".csv" required name="file"  style="display: none;">
                 </div>
                 <!-- Removed Manual K Input -->
-                
-                <button type="submit" id="btnTrain">Start Auto-Training</button>
+            
+                <button class="btn-primary"  type="button" id="btnTrain">Start Auto-Training</button>
             </form>
             <div id="trainStatus" class="status"></div>
         </div>
@@ -55,6 +55,16 @@
 </section>
     <script src="static/js/jquery-3.6.0.min.js"></script>
 <script>
+     $(document).ready(function() {
+            $('#btnTrain').on('click', function() {
+                $('#trainFile').click();
+            });
+
+            $('#trainFile').on('change', function() {
+                $('#trainForm').submit();
+            });
+        });
+
     const showStatus = (elementId, message, isError = false) => {
         const el = document.getElementById(elementId);
         el.textContent = message;
