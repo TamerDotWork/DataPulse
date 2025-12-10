@@ -74,7 +74,7 @@
         btn.textContent = "Analyzing & Training...";
         
         try {
-            const response = await fetch('/api/train', {
+            const response = await fetch('api/train', {
                 method: 'POST',
                 body: formData
             });
