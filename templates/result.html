@@ -55,7 +55,9 @@
 </section>
 
 <script>
-    // Check URL for success flag
+const rawData = sessionStorage.getItem('dqResult');
+const data = JSON.parse(rawData);
+console.log(data);  
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('success') === 'true'){
         document.getElementById('successBanner').style.display = 'block';
