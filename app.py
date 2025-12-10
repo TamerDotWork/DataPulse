@@ -23,10 +23,10 @@ async def read_root(request: Request):
     """Serve the Training UI (Step 1)"""
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/predict-ui", response_class=HTMLResponse)
-async def predict_ui(request: Request):
+@app.get("/result", response_class=HTMLResponse)
+async def result(request: Request):
     """Serve the Prediction UI (Step 2)"""
-    return templates.TemplateResponse("predict.html", {"request": request})
+    return templates.TemplateResponse("result.html", {"request": request})
 
 # ==========================
 #  API: AUTO-TRAIN
