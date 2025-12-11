@@ -19,40 +19,59 @@
 </div>
 </div>
 </header>
+  <div id="loading-overlay" style="display:none; ">
+            <div id="errorIcon"  ><img id="danger" src="static/danger.svg" alt=""></div>
+            <img id="preloader" src="static/preloader.gif" alt="">
+            <div id="progressContainer"></div>
 
+            <div id="errorContainer">
+                <div id="errorMsg"  ></div>
+                <a href="." id="refresh">Try again</a>
+            </div>
+            
+            
+        </div>
 <section class="hero">
     <div class="container">
         <strong>Customer Classification Model v3.0</strong>
         <h1>Unleash the Power of AI.<br>Smarter, Faster, Better</h1>
-        <p>Transform your business with cutting-edge AI. Automate tasks, enhance decision-making,and unlock new possibilities with our intelligent, adaptive model.</p>
+        <!-- <p>Transform your business with cutting-edge AI.  </p> -->
+        <p>Upload your dataset. We will auto-tune the parameters.</p>
     </div>
     <div class="cta">
   <div class="container">
-        <strong>Step 1: Auto-Training</strong>
-        <h3>Upload Data to Train AI</h3>
-        <p>Our AI will automatically analyze your data and determine the optimal number of clusters.</p>
+        <!-- <strong>Step 1: Auto-Training</strong>
+        <h2>Train Model</h2> -->
     </div>
     
     <div class="container" style="max-width: 600px;">
         <div class="card">
-            <h2>Train Model</h2>
-            <p>Select your dataset. We will auto-tune the parameters.</p>
+          
             
             <form id="trainForm" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label>Training Dataset (CSV)</label>
+                    <button class="primary-btn"  type="button" id="btnTrain">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 17V11L7 13" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M9 11L11 13" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M22 10V15C22 20 20 22 15 22H9C4 22 2 20 2 15V9C2 4 4 2 9 2H14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M22 10H18C15 10 14 9 14 6V2L22 10Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+Upload dataset</button>
                     <input type="file" id="trainFile" accept=".csv" required name="file"  style="display: none;">
                 </div>
                 
             
-                <button class="primary-btn"  type="button" id="btnTrain">Start Auto-Training</button>
+                
             </form>
-            <div id="trainStatus" class="status"></div>
+            
+
         </div>
     </div>
     </div>
     
 </section>
+
     <script src="static/js/jquery-3.6.0.min.js"></script>
 <script>
      $(document).ready(function() {
@@ -67,7 +86,23 @@
 
            $('#trainForm').on('submit', async function(e) {
            e.preventDefault();
-   
+    $('.hero,header').css('filter', 'blur(8px)');
+ 
+            const errorDiv = document.getElementById('errorMsg');
+            const errorContainer = document.getElementById('errorContainer');
+            const loader = document.getElementById('loading-overlay');
+            const errorIcon = document.getElementById('errorIcon');
+            const preloaderIcon = document.getElementById('preloader');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            const newString = "Training in progress... This may take a few minutes.";
+            progressContainer.textContent = newString;
+ 
+            loader.style.display = 'block';
+            errorDiv.style.display = 'none';
+            errorContainer.style.display = 'none';
+            errorIcon.style.display = 'none';
+            preloaderIcon.style.display = 'block';
 
             const fileInput = document.getElementById('trainFile');
             const btnTrain = document.getElementById('btnTrain');
@@ -88,8 +123,8 @@
 
                 // Read text first to catch HTML errors (like 404/500)
                 const responseText = await response.text();
-                btnTrain.textContent = "Training";
-                let result;
+                
+                 let result;
                 try {
                     result = JSON.parse(responseText);
                 } catch (err) {
