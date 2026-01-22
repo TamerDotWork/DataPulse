@@ -92,7 +92,7 @@ pip install -r requirements.txt
 # Run DataPulse
 python app.py
 
-
+```
 <p align="center">
   <a href="https://tamer.work">
     <img src="https://github.com/TamerDotWork/datapulse/blob/main/logo.jpg" alt="Vesper Banner" width="auto" style="border-radius: 56px;">
